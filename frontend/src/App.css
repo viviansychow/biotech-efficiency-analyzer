@@ -1,0 +1,43 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  /* text-align: center; */
+}
+
+.container {
+  position: relative;
+
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.results {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.err {
+  color: red;
+  position: absolute;
+  bottom: -20px
+}
+
+.error-banner {
+  color: red;
+  background: '#fee2e2';
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#cost, #sub-con {
+  margin-bottom: 20px;
+}
