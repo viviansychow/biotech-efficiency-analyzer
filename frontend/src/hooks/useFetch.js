@@ -50,5 +50,5 @@ export const useFetch = (url) => {
         }
     }
 
-    return {data, loading, error, performFetch, clearData }
+    return {data, loading, error, setError, performFetch, clearData }
 }

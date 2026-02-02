@@ -37,7 +37,38 @@ def analyze():
             "efficiency": round(efficiency, 4)
         }), 200
     except Exception as e:
-        print("inside exception===>")
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+@app.route("/api/stability", methods=["POST"])
+def check_stability():
+    try:
+        data = request.get_json(silent=True)
+
+        if not data:
+            return jsonify({"error": "No data is provided"}), 400
+
+        temperature = float(data.get("temperature"))
+
+        pH = float(data.get("pH"))
+
+        if pH < 0 or pH > 14:
+            return jsonify({"error": "pH value must be between 0 and 14"}), 400
+
+        result = []
+
+        if temperature > 40: 
+            result.append("Heat Denaturation")
+        if pH < 7.4:
+            result.append("Acidic Instabilty")
+        if temperature <= 40 and pH >= 7.4:
+            result.append("Stable")
+
+        res = " ,".join(result)
+
+        return jsonify({"result" : res}), 200
+
+    except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
 
 if __name__ == "__main__":

@@ -32,12 +32,25 @@
 }
 
 .error-banner {
+  position:absolute;
   color: red;
   background: '#fee2e2';
-  padding: 10px;
   border-radius: 5px;
 }
 
-#cost, #sub-con {
+#cost, #sub-con, #temp, #pH {
   margin-bottom: 20px;
+}
+
+.parent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
