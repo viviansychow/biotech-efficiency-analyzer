@@ -1,3 +1,5 @@
+import csv
+import io
 from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
 
@@ -70,6 +72,45 @@ def check_stability():
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
+
+@app.route("/api/upload_csv", methods=["POST"])
+def upload_csv():
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+        
+    try:
+        stream = file.read().decode("utf-8")
+        csv_file = io.StringIO(stream)
+        csv_reader = csv.DictReader(csv_file)
+
+        results = []
+
+        for row in csv_reader:
+            if "substrate_concentration" in row and "cost" in row:
+            # if row.get("substrate_concentration") and row.get("cost"):
+                try:
+                    s = float(row["substrate_concentration"])
+                    c = float(row["cost"])
+
+                    efficiency = s*1.5/c
+
+                    results.append({
+                        "s": s,
+                        "c": c,
+                        "eff": round(efficiency, 4)
+                    })
+                except ValueError:
+                    continue #skip bad rows
+        
+        return jsonify({"results": results}), 200
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e) }), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

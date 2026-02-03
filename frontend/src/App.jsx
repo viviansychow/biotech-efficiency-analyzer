@@ -11,6 +11,8 @@ function App() {
   const [ stabilityRes, setStabilityRes ] = useState("")
   const [ stabilityLoading, setStabilityLoading ] = useState(false)
   const { data, loading, error, setError, performFetch, clearData } = useFetch(baseUrl+ "/analyze")
+  const [ batchData, setBatchData ] = useState([])
+  const [ csvFile, setCsvFile ] = useState(null)
   const [ errs, setErrs ] = useState({})
 
   const handleInput = (e) => {
@@ -105,6 +107,39 @@ function App() {
     setError(null)
   }
 
+  const handleFileChange = (e) => {
+    if(e.target.files) setCsvFile(e.target.files[0])
+  }
+
+  const handleBatchUpload = async () => {
+    if(!csvFile) return;
+    const formData = new FormData()
+    formData.append("file", csvFile)
+    
+    try {
+
+      const response = await fetch(baseUrl + "/upload_csv", {
+        method: "POST",
+        body: formData
+      })
+
+      if(!response.ok) {
+        throw new Error(`"Error": ${response.status}`)
+      }
+
+      const d = await response.json()
+
+      if(d.results) setBatchData(d.results)
+
+    } catch (e) {
+      if(e.message === "Failed to fetch") {
+        setError("Cannot connect to server.")
+      } else {
+        setError(e.message)
+      }
+    }
+  }
+
   return (
     <div className="parent">
       {error && (
@@ -157,6 +192,16 @@ function App() {
             <h2>Result</h2>
             <p>{stabilityRes}</p>
           </div>}
+        </div>
+        <div className="container">
+          <h2>Batch Analysis</h2>
+          <input type="file" onChange={handleFileChange}/>
+          <button onClick={handleBatchUpload}>Upload</button>
+          <ul>
+            {batchData.map((row, i) => (
+              <li key={i}> {row["s"]}, {row["c"]}, {row["eff"]}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
